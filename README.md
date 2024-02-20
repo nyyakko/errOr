@@ -2,7 +2,7 @@
 
 # installation
 
-you may copy the files under errOr/include into your code or you may install into your system with the following: 
+you may copy the files under errOr/include into your project or install directly into your system with the following: 
 
 * ``py install.py``
 
@@ -39,13 +39,14 @@ error::ErrorOr<std::string> read_file_contents(std::filesystem::path path)
 
     std::stringstream contentStream {};
     contentStream << fileStream.rdbuf();
-    
+
     return contentStream.str();
 }
 
 int main()
 {
-    auto const contents = MUST(read_file_contents("some_cool_file.txt"); // if the function fails, the program execution ends an error message is given.
+    // if the function fails, the program execution ends an error message is given.
+    auto const contents = MUST(read_file_contents("some_cool_file.txt");
     std::println("{}", contents);
 }
 ```
@@ -70,14 +71,15 @@ error::ErrorOr<std::string> read_file_contents(std::filesystem::path path)
 
     std::stringstream contentStream {};
     contentStream << fileStream.rdbuf();
-    
+
     return contentStream.str();
 }
 
 error::ErrorOr<void> print_file_contents(std::filesystem::path path)
 {
-    auto const contents = TRY(read_file_contents("some_cool_file.txt")); // if the function fails, the error is pushed up into the call stack to be handled somewhere else.
-    
+    // if the function fails, the error is pushed up into the call stack to be handled somewhere else.
+    auto const contents = TRY(read_file_contents("some_cool_file.txt"));
+
     std::println("reading: {}", path.string());
     std::println("size in bytes: {}", contents.size());
     std::println("{}", contents);
@@ -91,4 +93,4 @@ int main()
 }
 ```
 
-for more, i recommend you to simply explore the code and see what you can do with it. seriously. do it.
+i recommend you to simply explore the code and see what you can do with it. seriously. do it.
