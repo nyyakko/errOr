@@ -1,6 +1,6 @@
 add_subdirectory(include/${PROJECT_NAME})
 
-add_library(${PROJECT_NAME} INTERFACE ${errOr_HeaderFiles})
+add_library(${PROJECT_NAME} INTERFACE ${err_or_HeaderFiles})
 
 if (ENABLE_CLANGTIDY)
     enable_clang_tidy()
@@ -20,7 +20,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES VERIFY_INTERFACE_HEADER_SETS TR
 
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_23)
 
-target_sources(${PROJECT_NAME} PUBLIC FILE_SET HEADERS BASE_DIRS include FILES ${errOr_HeaderFiles})
+target_sources(${PROJECT_NAME} PUBLIC FILE_SET HEADERS BASE_DIRS include FILES ${err_or_HeaderFiles})
 
 export(TARGETS      ${PROJECT_NAME}
        FILE         ${EXPORT_DIR}/${PROJECT_NAME}Targets.cmake
@@ -41,5 +41,5 @@ install(EXPORT      ${PROJECT_NAME}Targets
 
 install(FILES ${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}/cmake)
 
-target_compile_options(${PROJECT_NAME} INTERFACE ${errOr_CompilerOptions})
-target_link_libraries(${PROJECT_NAME} INTERFACE ${errOr_ExternalLibraries})
+target_compile_options(${PROJECT_NAME} INTERFACE ${err_or_CompilerOptions})
+target_link_libraries(${PROJECT_NAME} INTERFACE ${err_or_ExternalLibraries})

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(errOr LANGUAGES CXX)
+project(err_or LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -21,11 +21,11 @@ endif()
 
 enable_vcpkg()
 
-# set(errOr_LinkerOptions ${errOr_LinkerOptions}
+# set(err_or_LinkerOptions ${err_or_LinkerOptions}
 #   . . .
 # )
 
-set(errOr_CompilerOptions ${errOr_CompilerOptions}
+set(err_or_CompilerOptions ${err_or_CompilerOptions}
     -Werror
     -Wall
     -Wextra
@@ -48,4 +48,4 @@ set(errOr_CompilerOptions ${errOr_CompilerOptions}
 #
 # set(arser_ExternalLibraries package ...)
 
-add_subdirectory(errOr)
+add_subdirectory(err_or)

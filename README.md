@@ -2,7 +2,7 @@
 
 # installation
 
-you may copy the files under errOr/include into your project or install directly into your system with the following: 
+you may copy the files under err_or/include into your project or install directly into your system with the following: 
 
 * ``py install.py``
 
@@ -13,14 +13,14 @@ cmake_minimum_required_version(VERSION 3.25)
 
 project(CoolProject LANGUAGES CXX)
 
-find_package(errOr CONFIG REQUIRED)
+find_package(err_or CONFIG REQUIRED)
 add_executable(CoolProject source.cpp)
-target_link_libraries(CoolProject PRIVATE errOr::errOr)
+target_link_libraries(CoolProject PRIVATE err_or::err_or)
 ```
 
 # examples
 ```c++
-#include <errOr/ErrorOr.hpp>
+#include <err_or/ErrorOr.hpp>
 
 #include <string>
 #include <print>
@@ -52,7 +52,7 @@ int main()
 ```
 
 ```c++
-#include <errOr/ErrorOr.hpp>
+#include <err_or/ErrorOr.hpp>
 
 #include <string>
 #include <print>

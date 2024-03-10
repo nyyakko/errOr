@@ -4,12 +4,12 @@ function(enable_tests)
 
     if (NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
         message(STATUS "[${PROJECT_NAME}] running on ${CMAKE_HOST_SYSTEM_NAME}, sanitizers for tests are enabled.")
-        set(errOr_TestsLinkerOptions ${errOr_TestsLinkerOptions} -fsanitize=undefined,leak,address)
+        set(err_or_TestsLinkerOptions ${err_or_TestsLinkerOptions} -fsanitize=undefined,leak,address)
     else()
         message(STATUS "[${PROJECT_NAME}] running on ${CMAKE_HOST_SYSTEM_NAME}, sanitizers for tests are disabled.")
     endif()
 
-    set(errOr_TestsCompilerOptions ${errOr_TestsCompilerOptions} ${errOr_CompilerOptions})
+    set(err_or_TestsCompilerOptions ${err_or_TestsCompilerOptions} ${err_or_CompilerOptions})
 
     include(GoogleTest)
     find_package(GTest CONFIG REQUIRED)

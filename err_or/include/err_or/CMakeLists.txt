@@ -1,6 +1,6 @@
 set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-set(errOr_HeaderFiles ${errOr_HeaderFiles}
+set(err_or_HeaderFiles ${err_or_HeaderFiles}
     "${DIR}/ErrorOr.hpp"
 
     PARENT_SCOPE

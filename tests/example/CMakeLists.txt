@@ -9,8 +9,8 @@ enable_static_analyzers(${TEST_NAME} ON)
 
 set_target_properties(${TEST_NAME} PROPERTIES CXX_STANDARD ${CMAKE_CXX_VERSION})
 
-target_link_libraries(${TEST_NAME} PRIVATE GTest::gtest_main errOr)
-target_compile_options(${TEST_NAME} PRIVATE ${errOr_TestsCompilerOptions})
-target_link_options(${TEST_NAME} PRIVATE ${errOr_TestsLinkerOptions})
+target_link_libraries(${TEST_NAME} PRIVATE GTest::gtest_main err_or)
+target_compile_options(${TEST_NAME} PRIVATE ${err_or_TestsCompilerOptions})
+target_link_options(${TEST_NAME} PRIVATE ${err_or_TestsLinkerOptions})
 
 gtest_discover_tests(${TEST_NAME})
