@@ -141,12 +141,12 @@ concept error_policy_concept =
 template <class T, error_policy_concept ErrorPolicy = DefaultError>
 class ErrorOr
 {
-    template <class _T, error_policy_concept _ErrorPolicy> friend class ErrorOr;
+    template <class, error_policy_concept> friend class ErrorOr;
 
 public:
     using value_t = std::conditional_t<std::is_void_v<T>, EmptyType, T>;
 
-    constexpr ErrorOr()  = default;
+    constexpr  ErrorOr() = default;
     constexpr ~ErrorOr() = default;
 
     // cppcheck-suppress noExplicitConstructor
