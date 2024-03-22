@@ -1,10 +1,9 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.25)
+
 project(err_or LANGUAGES CXX)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-set(EXPORT_DIR "${CMAKE_CURRENT_BINARY_DIR}/cmake")
-set(CMAKE_TOOLCHAIN_FILE $ENV{CMAKE_TOOLCHAIN_FILE})
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+set(EXPORT_DIR "${CMAKE_SOURCE_DIR}/build/cmake")
 
 include(static_analyzers)
 include(enable_vcpkg)
@@ -21,31 +20,13 @@ endif()
 
 enable_vcpkg()
 
-# set(err_or_LinkerOptions ${err_or_LinkerOptions}
-#   . . .
-# )
+# set(err_or_LinkerOptions ${err_or_LinkerOptions})
+# set(err_or_CompilerOptions ${err_or_CompilerOptions})
 
-set(err_or_CompilerOptions ${err_or_CompilerOptions}
-    -Werror
-    -Wall
-    -Wextra
-    -Wshadow
-    -Wnon-virtual-dtor
-    -Wold-style-cast
-    -Wcast-align
-    -Wunused
-    -Woverloaded-virtual
-    -Wpedantic
-    -Wconversion
-    -Wsign-conversion
-    -Wnull-dereference
-    -Wdouble-promotion
-    -Wimplicit-fallthrough
-)
-
-# find_package(package CONFIG REQUIRED)
-# . . .
+# find_package(package1 CONFIG REQUIRED)
+# find_package(package2 CONFIG REQUIRED)
+# ...
 #
-# set(arser_ExternalLibraries package ...)
+# set(err_or_ExternalLibraries package1 package2 ...)
 
 add_subdirectory(err_or)

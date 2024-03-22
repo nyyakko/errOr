@@ -1,2 +1,3 @@
-# add_subdirectory(example)
+add_subdirectory(compiletime)
+add_subdirectory(runtime)
 

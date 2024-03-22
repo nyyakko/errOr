@@ -15,6 +15,6 @@ function(enable_tests)
     find_package(GTest CONFIG REQUIRED)
 
     enable_testing()
-    add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
+    add_subdirectory(tests)
 
 endfunction()
