@@ -6,7 +6,7 @@ using namespace error;
 
 TEST(runtime, no_error)
 {
-    auto result = [] -> ErrorOr<std::string> {
+    auto result = [] () -> ErrorOr<std::string> {
         return "69420";
     }();
 
@@ -15,7 +15,7 @@ TEST(runtime, no_error)
 
 TEST(runtime, single_error)
 {
-    auto result = [] -> ErrorOr<std::string> {
+    auto result = [] () -> ErrorOr<std::string> {
         return make_error("error");
     }();
 
@@ -24,10 +24,15 @@ TEST(runtime, single_error)
 
 TEST(runtime, multiple_error)
 {
-    auto result = [] -> ErrorOr<std::string> {
-        (void)TRY([] -> ErrorOr<std::string> {
+    auto result = [] () -> ErrorOr<std::string> {
+        auto const error = [] () -> ErrorOr<std::string> {
             return make_error("first error");
-        }());
+        }();
+
+        if (error.has_error())
+        {
+            return make_error(error.error());
+        }
 
         return make_error("second error");
     }();

@@ -6,6 +6,7 @@
 #include <string_view>
 #include <variant>
 
+#if defined(__clang__) || defined(__GNUC__)
 #define TRY(expression) ({                                                          \
     auto _ = (expression);                                                          \
     if (_.has_error())                                                              \
@@ -22,6 +23,10 @@
     }                                                                               \
     *_;                                                                             \
 })
+#else
+#define TRY(expression) expression
+#define MUST(expression) expression
+#endif
 
 namespace error {
 
