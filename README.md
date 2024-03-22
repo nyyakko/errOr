@@ -2,7 +2,7 @@
 
 # installation
 
-you may copy the files under err_or/include into your project or install directly into your system with the following: 
+you may copy the files under err_or/include into your project, install it with [vcpkg](https://github.com/echites/vcpkg-registry) or install directly into your system with the following: 
 
 * ``py install.py``
 
