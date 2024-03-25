@@ -59,20 +59,15 @@ public:
     constexpr ~ErrorOr() = default;
 
     // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(value_t&& value) noexcept: value_m(std::move(value)) {}
-
-    // cppcheck-suppress noExplicitConstructor
     constexpr ErrorOr(auto&&... value) noexcept
         requires(std::is_constructible_v<value_t, decltype(value)...>)
-            : value_m(std::forward<decltype(value)>(value)...)
+            : value_m(std::in_place_type<value_t>, std::forward<decltype(value)>(value)...)
     {}
 
     // cppcheck-suppress noExplicitConstructor
     constexpr ErrorOr(value_t const& value) noexcept: value_m(value) {}
 
-    explicit constexpr ErrorOr(ErrorPolicy&& error) noexcept
-        : value_m(std::move(error))
-    {}
+    explicit constexpr ErrorOr(ErrorPolicy&& error) noexcept: value_m(std::move(error)) {}
 
     // cppcheck-suppress noExplicitConstructor
     constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept
