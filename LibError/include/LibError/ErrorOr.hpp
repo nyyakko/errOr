@@ -24,11 +24,10 @@
     *_;                                                                             \
 })
 #else
-#define TRY(expression) expression
-#define MUST(expression) expression
+#error "Your compiler doesn't allow for [compound-expressions](https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html)"
 #endif
 
-namespace error {
+namespace liberror {
 
     namespace {
 
@@ -48,7 +47,7 @@ concept error_policy_concept = requires (T error)
 };
 
 template <class T, error_policy_concept ErrorPolicy = DefaultError>
-class ErrorOr
+class [[nodiscard]] ErrorOr
 {
     template <class, error_policy_concept> friend class ErrorOr;
 
@@ -131,5 +130,5 @@ template <error_policy_concept ErrorPolicy>
     return ErrorOr<EmptyType, ErrorPolicy> { std::move(error) };
 }
 
-} // error
+} // liberror
 

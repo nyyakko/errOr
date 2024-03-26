@@ -6,7 +6,7 @@
 #include <stacktrace>
 #include <string_view>
 
-namespace error {
+namespace liberror {
 
 class [[nodiscard]] TraceError
 {

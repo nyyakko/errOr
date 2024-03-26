@@ -1,6 +1,6 @@
 set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-set(err_or_HeaderFiles ${err_or_HeaderFiles}
+set(LibError_HeaderFiles ${LibError_HeaderFiles}
     "${DIR}/DefaultError.hpp"
     "${DIR}/TraceError.hpp"
 

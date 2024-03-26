@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace error {
+namespace liberror {
 
 class [[nodiscard]] DefaultError
 {

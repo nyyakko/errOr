@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include <err_or/ErrorOr.hpp>
-#include <err_or/types/TraceError.hpp>
+#include <LibError/ErrorOr.hpp>
+#include <LibError/types/TraceError.hpp>
 
-using namespace error;
+using namespace liberror;
 
 TEST(compile_time, convert_to_string_implicitly)
 {

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(err_or LANGUAGES CXX)
+project(LibError LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(EXPORT_DIR "${CMAKE_SOURCE_DIR}/build/cmake")
@@ -20,13 +20,13 @@ endif()
 
 enable_vcpkg()
 
-# set(err_or_LinkerOptions ${err_or_LinkerOptions})
-# set(err_or_CompilerOptions ${err_or_CompilerOptions})
+# set(LibError_LinkerOptions ${LibError_LinkerOptions})
+# set(LibError_CompilerOptions ${LibError_CompilerOptions})
 
 # find_package(package1 CONFIG REQUIRED)
 # find_package(package2 CONFIG REQUIRED)
 # ...
 #
-# set(err_or_ExternalLibraries package1 package2 ...)
+# set(LibError_ExternalLibraries package1 package2 ...)
 
-add_subdirectory(err_or)
+add_subdirectory(LibError)

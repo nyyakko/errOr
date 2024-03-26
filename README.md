@@ -2,7 +2,7 @@
 
 # installation
 
-you may copy the files under err_or/include into your project, install it with [vcpkg](https://github.com/echites/vcpkg-registry) or install directly into your system with the following: 
+you may copy the files under LibError/include into your project, install it with [vcpkg](https://github.com/echites/vcpkg-registry) or install directly into your system with the following: 
 
 * ``py install.py``
 
@@ -13,14 +13,14 @@ cmake_minimum_required_version(VERSION 3.25)
 
 project(CoolProject LANGUAGES CXX)
 
-find_package(err_or CONFIG REQUIRED)
+find_package(LibError CONFIG REQUIRED)
 add_executable(CoolProject source.cpp)
-target_link_libraries(CoolProject PRIVATE err_or::err_or)
+target_link_libraries(CoolProject PRIVATE LibError::LibError)
 ```
 
 # examples
 ```c++
-#include <err_or/ErrorOr.hpp>
+#include <LibError/ErrorOr.hpp>
 
 #include <string>
 #include <print>
@@ -28,13 +28,13 @@ target_link_libraries(CoolProject PRIVATE err_or::err_or)
 #include <sstream>
 #include <filesystem>
 
-error::ErrorOr<std::string> read_file_contents(std::filesystem::path path)
+liberror::ErrorOr<std::string> read_file_contents(std::filesystem::path path)
 {
     std::ifstream fileStream { path };
 
     if (fileStream.fail())
     {
-        return error::make_error("Couldn't read file: \"{}\"", path.string());
+        return liberror::make_error("Couldn't read file: \"{}\"", path.string());
     }
 
     std::stringstream contentStream {};
@@ -52,7 +52,7 @@ int main()
 ```
 
 ```c++
-#include <err_or/ErrorOr.hpp>
+#include <LibError/ErrorOr.hpp>
 
 #include <string>
 #include <print>
@@ -60,13 +60,13 @@ int main()
 #include <sstream>
 #include <filesystem>
 
-error::ErrorOr<std::string> read_file_contents(std::filesystem::path path)
+liberror::ErrorOr<std::string> read_file_contents(std::filesystem::path path)
 {
     std::ifstream fileStream { path };
 
     if (fileStream.fail())
     {
-        return error::make_error("Couldn't read file: \"{}\"", path.string());
+        return liberror::make_error("Couldn't read file: \"{}\"", path.string());
     }
 
     std::stringstream contentStream {};
@@ -75,7 +75,7 @@ error::ErrorOr<std::string> read_file_contents(std::filesystem::path path)
     return contentStream.str();
 }
 
-error::ErrorOr<void> print_file_contents(std::filesystem::path path)
+liberror::ErrorOr<void> print_file_contents(std::filesystem::path path)
 {
     // if the function fails, the error is pushed up into the call stack to be handled somewhere else.
     auto const contents = TRY(read_file_contents("some_cool_file.txt"));

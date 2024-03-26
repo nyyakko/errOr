@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <err_or/ErrorOr.hpp>
+#include <LibError/ErrorOr.hpp>
 
-using namespace error;
+using namespace liberror;
 
 TEST(runtime, no_error)
 {
