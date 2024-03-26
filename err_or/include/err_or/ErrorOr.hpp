@@ -70,14 +70,10 @@ public:
     explicit constexpr ErrorOr(ErrorPolicy&& error) noexcept: value_m(std::move(error)) {}
 
     // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept
-        : value_m(std::get<ErrorPolicy>(errorOr.value_m))
-    {}
+    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept: value_m(std::get<ErrorPolicy>(errorOr.value_m)) {}
 
     // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept
-        : value_m(std::move(std::get<ErrorPolicy>(errorOr.value_m)))
-    {}
+    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept: value_m(std::move(std::get<ErrorPolicy>(errorOr.value_m))) {}
 
     constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept
     {
