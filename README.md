@@ -20,7 +20,7 @@ target_link_libraries(CoolProject PRIVATE LibError::LibError)
 
 # examples
 ```c++
-#include <LibError/ErrorOr.hpp>
+#include <liberror/ErrorOr.hpp>
 
 #include <string>
 #include <print>
@@ -52,7 +52,7 @@ int main()
 ```
 
 ```c++
-#include <LibError/ErrorOr.hpp>
+#include <liberror/ErrorOr.hpp>
 
 #include <string>
 #include <print>
