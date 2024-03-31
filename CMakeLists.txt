@@ -5,6 +5,7 @@ project(LibError LANGUAGES CXX)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(EXPORT_DIR "${CMAKE_SOURCE_DIR}/build/cmake")
 
+include(CPM)
 include(static_analyzers)
 include(enable_vcpkg)
 include(enable_tests)
