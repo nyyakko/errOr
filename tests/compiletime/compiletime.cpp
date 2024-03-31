@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <LibError/ErrorOr.hpp>
-#include <LibError/types/TraceError.hpp>
+#include <liberror/ErrorOr.hpp>
+#include <liberror/types/TraceError.hpp>
 
 using namespace liberror;
 

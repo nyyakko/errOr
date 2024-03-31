@@ -10,7 +10,7 @@
 #define TRY(expression) ({                                                          \
     auto _ = (expression);                                                          \
     if (_.has_error())                                                              \
-        return error::make_error(_.error());                                        \
+        return liberror::make_error(_.error());                                     \
     *_;                                                                             \
 })
 
