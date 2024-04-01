@@ -12,7 +12,6 @@ function(enable_tests)
     set(LibError_TestsCompilerOptions ${LibError_TestsCompilerOptions} ${LibError_CompilerOptions})
 
     include(GoogleTest)
-    find_package(GTest CONFIG REQUIRED)
 
     enable_testing()
     add_subdirectory(tests)
