@@ -8,7 +8,7 @@ add_executable(${TEST_NAME} "${DIR}/${TEST_NAME}.cpp")
 enable_clang_tidy()
 enable_cppcheck()
 
-target_link_libraries(${TEST_NAME} PRIVATE gtest_main gtest LibError)
+target_link_libraries(${TEST_NAME} PRIVATE gtest_main gtest LibError::LibError)
 target_compile_options(${TEST_NAME} PRIVATE
     $<$<NOT:$<STREQUAL:${CMAKE_CXX_COMPILER_ID},MSVC>>:-Wno-gnu-statement-expression-from-macro-expansion>
 )

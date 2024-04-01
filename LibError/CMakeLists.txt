@@ -1,6 +1,7 @@
 add_subdirectory(include/${PROJECT_NAME})
 
 add_library(${PROJECT_NAME} INTERFACE ${LibError_HeaderFiles})
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 if (ENABLE_CLANGTIDY)
     enable_clang_tidy()
