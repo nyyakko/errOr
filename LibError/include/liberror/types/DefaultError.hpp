@@ -10,9 +10,9 @@ public:
     constexpr  DefaultError() = default;
     constexpr ~DefaultError() = default;
 
-    explicit constexpr DefaultError(std::string_view message) noexcept: message_m(message) {}
-    constexpr DefaultError(DefaultError const& error) noexcept: message_m(error.message_m) {}
-    constexpr DefaultError(DefaultError&& error) noexcept: message_m(std::move(error.message_m)) {}
+    constexpr explicit DefaultError(std::string_view message) noexcept : message_m { message } {}
+    constexpr DefaultError(DefaultError const& error) noexcept : message_m { error.message_m } {}
+    constexpr DefaultError(DefaultError&& error) noexcept : message_m { error.message_m } {}
 
     constexpr DefaultError& operator=(DefaultError&& error) noexcept
     {

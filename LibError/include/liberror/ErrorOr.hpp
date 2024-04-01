@@ -58,21 +58,25 @@ public:
     constexpr ~ErrorOr() = default;
 
     // cppcheck-suppress noExplicitConstructor
+    constexpr ErrorOr(value_t const& value) noexcept: value_m { value } {}
+
+    // cppcheck-suppress noExplicitConstructor
     constexpr ErrorOr(auto&&... value) noexcept
         requires(std::is_constructible_v<value_t, decltype(value)...>)
-            : value_m(std::in_place_type<value_t>, std::forward<decltype(value)>(value)...)
+            : value_m { std::in_place_type<value_t>, std::forward<decltype(value)>(value)... }
     {}
 
     // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(value_t const& value) noexcept: value_m(value) {}
+    constexpr ErrorOr(value_t&& value) noexcept : value_m { std::in_place_type<value_t>, value } {}
 
-    explicit constexpr ErrorOr(ErrorPolicy&& error) noexcept: value_m(std::move(error)) {}
-
-    // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept: value_m(std::get<ErrorPolicy>(errorOr.value_m)) {}
+    constexpr explicit ErrorOr(ErrorPolicy&& error) noexcept : value_m { error } {}
 
     // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept: value_m(std::move(std::get<ErrorPolicy>(errorOr.value_m))) {}
+    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept : value_m { errorOr.error() } {}
+
+    // cppcheck-suppress noExplicitConstructor
+    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept
+        : value_m { std::in_place_type<ErrorPolicy>, errorOr.error() } {}
 
     constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept
     {
@@ -117,6 +121,12 @@ template <error_policy_concept ErrorPolicy = DefaultError>
     return ErrorOr<EmptyType> { ErrorPolicy { std::vformat(format.data(), std::make_format_args(std::forward<decltype(args)>(args)...)) } };
 }
 
+template <error_policy_concept ErrorPolicy = DefaultError>
+[[nodiscard]] constexpr auto make_error(std::string_view message) noexcept
+{
+    return ErrorOr<EmptyType> { ErrorPolicy { message } };
+}
+
 template <error_policy_concept ErrorPolicy>
 [[nodiscard]] constexpr auto make_error(auto&&... args)
     requires (!std::is_same_v<ErrorPolicy, DefaultError>)
@@ -127,7 +137,7 @@ template <error_policy_concept ErrorPolicy>
 template <error_policy_concept ErrorPolicy>
 [[nodiscard]] constexpr auto make_error(ErrorPolicy&& error) noexcept
 {
-    return ErrorOr<EmptyType, ErrorPolicy> { std::move(error) };
+    return ErrorOr<EmptyType, ErrorPolicy> { std::forward<ErrorPolicy>(error) };
 }
 
 } // liberror

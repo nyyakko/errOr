@@ -15,18 +15,23 @@ public:
     constexpr ~TraceError() = default;
 
     explicit constexpr TraceError(std::string_view format, auto&&... args)
-        : message_m(std::vformat(format, std::make_format_args(std::forward<decltype(args)>(args)...)))
-        , errorStack_m(std::stacktrace::current())
+        : message_m { std::vformat(format, std::make_format_args(std::forward<decltype(args)>(args)...)) }
+        , errorStack_m { std::stacktrace::current() }
+    {}
+
+    explicit constexpr TraceError(std::string_view message)
+        : message_m { message }
+        , errorStack_m { std::stacktrace::current() }
     {}
 
     constexpr TraceError(TraceError const& error) noexcept
-        : message_m(error.message_m)
-        , errorStack_m(error.errorStack_m)
+        : message_m { error.message_m }
+        , errorStack_m { error.errorStack_m }
     {}
 
     constexpr TraceError(TraceError&& error) noexcept
-        : message_m(std::move(error.message_m))
-        , errorStack_m(std::move(error.errorStack_m))
+        : message_m { error.message_m }
+        , errorStack_m { std::move(error.errorStack_m) }
     {}
 
     constexpr TraceError& operator=(TraceError&& error) noexcept
@@ -58,8 +63,8 @@ public:
     }
 
 private:
-    std::string message_m {};
-    std::stacktrace errorStack_m {};
+    std::string message_m;
+    std::stacktrace errorStack_m;
 };
 
 } // error
