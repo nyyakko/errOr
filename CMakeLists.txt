@@ -20,14 +20,6 @@ endif()
 # set(LibError_LinkerOptions ${LibError_LinkerOptions})
 set(LibError_CompilerOptions ${LibError_CompilerOptions} -Wno-language-extension-token)
 
-CPMAddPackage(
-    NAME googletest
-    GITHUB_REPOSITORY google/googletest
-    GIT_TAG release-1.12.1
-    VERSION 1.12.1
-    OPTIONS "INSTALL_GTEST OFF" "gtest_force_shared_crt"
-)
-
-set(LibError_ExternalLibraries)
+# set(LibError_ExternalLibraries)
 
 add_subdirectory(LibError)
