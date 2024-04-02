@@ -3,6 +3,9 @@
 #include <liberror/ErrorOr.hpp>
 #include <liberror/types/TraceError.hpp>
 
+#include <sstream>
+#include <memory>
+
 using namespace liberror;
 
 consteval ErrorOr<size_t> inspect_string(std::string_view input, size_t current = 0)
@@ -64,5 +67,18 @@ TEST(compile_time, non_default_error_type)
 
     static_assert(result.has_error() == false);
     static_assert(result.value() == "69420");
+}
+
+TEST(compile_time, return_move_only_types)
+{
+    (void)[] () -> ErrorOr<std::stringstream> {
+        std::stringstream stream {};
+        return stream;
+    };
+
+    (void)[] () -> ErrorOr<std::unique_ptr<int>> {
+        std::unique_ptr<int> pointer {};
+        return pointer;
+    };
 }
 

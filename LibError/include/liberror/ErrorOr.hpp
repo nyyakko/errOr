@@ -67,7 +67,7 @@ public:
     {}
 
     // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(value_t&& value) noexcept : value_m { std::in_place_type<value_t>, value } {}
+    constexpr ErrorOr(value_t&& value) noexcept : value_m { std::move(value) } {}
 
     constexpr explicit ErrorOr(ErrorPolicy&& error) noexcept : value_m { error } {}
 
