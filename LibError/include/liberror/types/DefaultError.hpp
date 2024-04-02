@@ -32,5 +32,5 @@ private:
     std::string message_m;
 };
 
-} // error
+} // liberror
 

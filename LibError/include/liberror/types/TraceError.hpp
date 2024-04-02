@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <ranges>
 #include <sstream>
 #include <stacktrace>
@@ -13,11 +12,6 @@ class [[nodiscard]] TraceError
 public:
     constexpr  TraceError() = default;
     constexpr ~TraceError() = default;
-
-    explicit constexpr TraceError(std::string_view format, auto&&... args)
-        : message_m { std::vformat(format, std::make_format_args(std::forward<decltype(args)>(args)...)) }
-        , errorStack_m { std::stacktrace::current() }
-    {}
 
     explicit constexpr TraceError(std::string_view message)
         : message_m { message }
@@ -67,5 +61,5 @@ private:
     std::stacktrace errorStack_m;
 };
 
-} // error
+} // liberror
 
