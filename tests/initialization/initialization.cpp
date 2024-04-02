@@ -36,6 +36,7 @@ void restore_stdout(int state)
 struct S
 {
     constexpr S(std::string) noexcept { std::println("S::S(std::string)"); }
+    constexpr S(char const*) noexcept { std::println("S::S(char const*)"); }
     constexpr ~S() noexcept { std::println("S::~S()"); }
     constexpr S(S const&) noexcept { std::println("S::S(S const&)"); }
     constexpr S(S&&) noexcept { std::println("S::S(S&&)"); }
@@ -43,7 +44,20 @@ struct S
     constexpr S& operator=(S&&) noexcept { std::println("S::S operator=(S&&)"); return *this; }
 };
 
-TEST(initialization, in_place_success)
+TEST(initialization, explicit_with_in_place_construction)
+{
+    std::array<char, BUFFER_SIZE> buffer {};
+    auto const previousState = redirect_stdout_to_buffer(buffer);
+    (void)[] -> ErrorOr<S> {
+        using namespace std::literals;
+        ErrorOr<S> temp { "hello"s };
+        return temp;
+    }();
+    restore_stdout(previousState);
+    EXPECT_STREQ(buffer.data(), "S::S(std::string)\nS::~S()\n");
+}
+
+TEST(initialization, implicit_with_in_place_construction)
 {
     std::array<char, BUFFER_SIZE> buffer {};
     auto const previousState = redirect_stdout_to_buffer(buffer);
@@ -51,8 +65,9 @@ TEST(initialization, in_place_success)
         return "hello";
     }();
     restore_stdout(previousState);
-    EXPECT_STREQ(buffer.data(), "S::S(std::string)\nS::~S()\n");
+    EXPECT_STREQ(buffer.data(), "S::S(char const*)\nS::~S()\n");
 }
+
 
 TEST(initialization, no_extra_object_failure)
 {

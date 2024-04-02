@@ -6,11 +6,11 @@ using namespace liberror;
 
 TEST(runtime, no_error)
 {
-    auto result = [] () -> ErrorOr<std::string> {
+    auto result = [] () -> ErrorOr<std::string_view> {
         return "69420";
     }();
 
-    EXPECT_STREQ(result.value().c_str(), "69420");
+    EXPECT_STREQ(result.value().data(), "69420");
 }
 
 TEST(runtime, single_error)

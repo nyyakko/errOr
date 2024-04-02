@@ -54,29 +54,33 @@ class [[nodiscard]] ErrorOr
 public:
     using value_t = std::conditional_t<std::is_void_v<T>, EmptyType, T>;
 
-    constexpr  ErrorOr() = default;
-    constexpr ~ErrorOr() = default;
-
-    // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(auto&&... value) noexcept
-        requires(std::is_constructible_v<value_t, decltype(value)...>)
+    explicit constexpr ErrorOr(auto&&... value)
+        requires (std::is_constructible_v<value_t, decltype(value)...>)
             : value_m { std::in_place_type<value_t>, std::forward<decltype(value)>(value)... }
     {}
 
     // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(value_t const& value) noexcept: value_m { value } {}
+    constexpr ErrorOr(auto&& value) noexcept
+        requires (std::is_nothrow_constructible_v<value_t, decltype(value)>)
+            : value_m { std::in_place_type<value_t>, std::forward<decltype(value)>(value) }
+    {}
+
+    // cppcheck-suppress noExplicitConstructor
+    constexpr ErrorOr(value_t const& value) noexcept : value_m { value } {}
 
     // cppcheck-suppress noExplicitConstructor
     constexpr ErrorOr(value_t&& value) noexcept : value_m { std::move(value) } {}
 
-    constexpr explicit ErrorOr(ErrorPolicy&& error) noexcept : value_m { error } {}
+    constexpr ErrorOr() noexcept = default;
+    constexpr ~ErrorOr() noexcept = default;
+
+    explicit constexpr ErrorOr(ErrorPolicy&& error) noexcept : value_m { std::move(error) } {}
 
     // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept : value_m { errorOr.error() } {}
+    constexpr ErrorOr(ErrorOr<value_t, ErrorPolicy> const& errorOr) noexcept : value_m { errorOr.error() } {}
 
     // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept
-        : value_m { std::in_place_type<ErrorPolicy>, errorOr.error() } {}
+    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept : value_m { std::move(errorOr.error()) } {}
 
     constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept
     {
@@ -90,21 +94,21 @@ public:
         return *this;
     }
 
-    [[nodiscard]] constexpr auto value() const noexcept { return std::get<value_t>(value_m); }
+    [[nodiscard]] constexpr auto value() const { return std::get<value_t>(value_m); }
     [[nodiscard]] constexpr auto has_value() const noexcept { return std::holds_alternative<value_t>(value_m); }
-    [[nodiscard]] constexpr auto error() const noexcept { return std::get<ErrorPolicy>(value_m); }
+    [[nodiscard]] constexpr auto error() const { return std::get<ErrorPolicy>(value_m); }
     [[nodiscard]] constexpr auto has_error() const noexcept { return std::holds_alternative<ErrorPolicy>(value_m); }
 
     constexpr auto operator!() const noexcept { return has_error(); }
     explicit constexpr operator bool() const noexcept { return !has_error(); }
 
-    [[nodiscard]] constexpr auto operator*() const noexcept
+    [[nodiscard]] constexpr auto operator*() const
     {
         if constexpr (!std::is_same_v<value_t, EmptyType>)
             return std::get<value_t>(value_m);
     }
 
-    [[nodiscard]] constexpr auto operator*() noexcept
+    [[nodiscard]] constexpr auto operator*()
     {
         if constexpr (!std::is_same_v<value_t, EmptyType>)
             return std::move(std::get<value_t>(value_m));
