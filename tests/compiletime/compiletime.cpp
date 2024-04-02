@@ -59,7 +59,7 @@ TEST(compile_time, convert_to_pair_implicitly)
     static_assert(result.value() == std::pair { 69, "420" });
 }
 
-TEST(compile_time, non_default_error_type)
+TEST(compile_time, non_default_error_type_success)
 {
     auto constexpr result = [] () -> ErrorOr<std::string_view, TraceError> {
         return "69420";

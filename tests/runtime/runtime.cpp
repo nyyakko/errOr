@@ -1,8 +1,16 @@
 #include <gtest/gtest.h>
 
 #include <liberror/ErrorOr.hpp>
+#include <liberror/types/TraceError.hpp>
 
 using namespace liberror;
+
+TEST(compile_time, non_default_error_type_failure)
+{
+    auto result = [] () -> ErrorOr<std::string_view, TraceError> {
+        return make_error<TraceError>("failure");
+    }();
+}
 
 TEST(runtime, no_error)
 {

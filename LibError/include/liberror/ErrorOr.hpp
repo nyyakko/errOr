@@ -121,16 +121,16 @@ private:
 template <error_policy_concept ErrorPolicy = DefaultError>
 [[nodiscard]] constexpr auto make_error(std::string_view const format, auto&&... args) noexcept
 {
-    return ErrorOr<EmptyType> { ErrorPolicy { std::vformat(format.data(), std::make_format_args(std::forward<decltype(args)>(args)...)) } };
+    return ErrorOr<EmptyType, ErrorPolicy> { ErrorPolicy { std::vformat(format.data(), std::make_format_args(std::forward<decltype(args)>(args)...)) } };
 }
 
 template <error_policy_concept ErrorPolicy = DefaultError>
 [[nodiscard]] constexpr auto make_error(std::string_view message) noexcept
 {
-    return ErrorOr<EmptyType> { ErrorPolicy { message } };
+    return ErrorOr<EmptyType, ErrorPolicy> { ErrorPolicy { message } };
 }
 
-template <error_policy_concept ErrorPolicy>
+template <error_policy_concept ErrorPolicy = DefaultError>
 [[nodiscard]] constexpr auto make_error(ErrorPolicy&& error) noexcept
 {
     return ErrorOr<EmptyType, ErrorPolicy> { std::forward<ErrorPolicy>(error) };
