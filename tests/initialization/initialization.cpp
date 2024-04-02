@@ -10,6 +10,19 @@ using namespace liberror;
 
 static constexpr auto BUFFER_SIZE = 1024;
 
+struct S
+{
+    explicit constexpr S(std::string value) noexcept : value_m { value } { std::println("S::S(std::string)"); }
+    explicit constexpr S(char const* value) noexcept : value_m { value } { std::println("S::S(char const*)"); }
+    constexpr ~S() noexcept { std::println("S::~S()"); }
+    constexpr S(S const& s) noexcept : value_m { s.value_m } { std::println("S::S(S const&)"); }
+    constexpr S(S&& s) noexcept : value_m { std::move(s.value_m) } { std::println("S::S(S&&)"); }
+    constexpr S& operator=(S const& s) { value_m = s.value_m; std::println("S::S operator=(S const&)"); return *this; }
+    constexpr S& operator=(S&& s) noexcept { value_m = std::move(s.value_m); std::println("S::S operator=(S&&)"); return *this; }
+
+    std::string value_m {};
+};
+
 int redirect_stdout_to_buffer(std::array<char, BUFFER_SIZE>& buffer)
 {
     fflush(stdout);
@@ -33,17 +46,6 @@ void restore_stdout(int state)
     setvbuf(stdout, NULL, _IONBF, BUFFER_SIZE);
 }
 
-struct S
-{
-    constexpr S(std::string) noexcept { std::println("S::S(std::string)"); }
-    constexpr S(char const*) noexcept { std::println("S::S(char const*)"); }
-    constexpr ~S() noexcept { std::println("S::~S()"); }
-    constexpr S(S const&) noexcept { std::println("S::S(S const&)"); }
-    constexpr S(S&&) noexcept { std::println("S::S(S&&)"); }
-    constexpr S& operator=(S const&) noexcept { std::println("S::S operator=(S const&)"); return *this; }
-    constexpr S& operator=(S&&) noexcept { std::println("S::S operator=(S&&)"); return *this; }
-};
-
 TEST(initialization, explicit_with_in_place_construction)
 {
     std::array<char, BUFFER_SIZE> buffer {};
@@ -55,6 +57,20 @@ TEST(initialization, explicit_with_in_place_construction)
     }();
     restore_stdout(previousState);
     EXPECT_STREQ(buffer.data(), "S::S(std::string)\nS::~S()\n");
+}
+
+TEST(initialization, explicit_with_in_place_construction_while_checking_for_internal_state)
+{
+    std::array<char, BUFFER_SIZE> buffer {};
+    auto const previousState = redirect_stdout_to_buffer(buffer);
+    (void)[] -> ErrorOr<S> {
+        using namespace std::literals;
+        ErrorOr<S> temp { "hello"s };
+        if (temp.value().value_m != "hello"s) return make_error("failure");
+        return temp;
+    }();
+    restore_stdout(previousState);
+    EXPECT_STREQ(buffer.data(), "S::S(std::string)\nS::S(S&&)\nS::~S()\nS::~S()\n");
 }
 
 TEST(initialization, implicit_with_in_place_construction)

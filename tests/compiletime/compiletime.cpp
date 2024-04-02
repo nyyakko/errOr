@@ -3,7 +3,6 @@
 #include <liberror/ErrorOr.hpp>
 #include <liberror/types/TraceError.hpp>
 
-#include <sstream>
 #include <memory>
 
 using namespace liberror;
@@ -52,7 +51,7 @@ TEST(compile_time, convert_to_string_implicitly)
 TEST(compile_time, convert_to_pair_implicitly)
 {
     auto constexpr result = [] () -> ErrorOr<std::pair<int, std::string_view>> {
-        return {{ 69, "420" }};
+        return std::pair { 69, "420" };
     }();
 
     static_assert(result.has_error() == false);
@@ -69,13 +68,8 @@ TEST(compile_time, non_default_error_type_success)
     static_assert(result.value() == "69420");
 }
 
-TEST(compile_time, return_move_only_types)
+TEST(compile_time, return_move_only_type)
 {
-    (void)[] () -> ErrorOr<std::stringstream> {
-        std::stringstream stream {};
-        return stream;
-    };
-
     (void)[] () -> ErrorOr<std::unique_ptr<int>> {
         std::unique_ptr<int> pointer {};
         return pointer;

@@ -11,7 +11,7 @@
     auto _ = (expression);                                                          \
     if (_.has_error())                                                              \
         return liberror::make_error(_.error());                                     \
-    *_;                                                                             \
+    _.value();                                                                      \
 })
 
 #define MUST(expression) ({                                                         \
@@ -21,7 +21,7 @@
         std::println(stderr, "Aborted execution because: {}", _.error().message()); \
         std::abort();                                                               \
     }                                                                               \
-    *_;                                                                             \
+    _.value();                                                                      \
 })
 #else
 #error "Your compiler doesn't allow for [compound-expressions](https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html)"
@@ -53,66 +53,63 @@ class [[nodiscard]] ErrorOr
 
 public:
     using value_t = std::conditional_t<std::is_void_v<T>, EmptyType, T>;
+    using error_t = ErrorPolicy;
 
-    explicit constexpr ErrorOr(auto&&... value)
-        requires (std::is_constructible_v<value_t, decltype(value)...>)
-            : value_m { std::in_place_type<value_t>, std::forward<decltype(value)>(value)... }
-    {}
+    constexpr  ErrorOr() = default;
+    constexpr ~ErrorOr() = default;
+
+    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept : value_m { std::move(errorOr.error()) } {}
+    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) : value_m { errorOr.error() } {}
+
+    constexpr ErrorOr(ErrorOr<value_t, ErrorPolicy>&& errorOr) noexcept
+        requires (!std::is_same_v<value_t, EmptyType>) : value_m { std::move(errorOr.value_m) } {}
+    constexpr ErrorOr(ErrorOr<value_t, ErrorPolicy> const& errorOr)
+        requires (!std::is_same_v<value_t, EmptyType>) : value_m { errorOr.value_m } {}
 
     // cppcheck-suppress noExplicitConstructor
     constexpr ErrorOr(auto&& value) noexcept
         requires (std::is_nothrow_constructible_v<value_t, decltype(value)>)
-            : value_m { std::in_place_type<value_t>, std::forward<decltype(value)>(value) }
-    {}
+            : value_m { std::in_place_type<value_t>, std::forward<decltype(value)>(value) } {}
 
     // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(value_t const& value) noexcept : value_m { value } {}
-
-    // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(value_t&& value) noexcept : value_m { std::move(value) } {}
-
-    constexpr ErrorOr() noexcept = default;
-    constexpr ~ErrorOr() noexcept = default;
+    constexpr ErrorOr(auto&& value) noexcept
+            : value_m { std::in_place_type<value_t>, std::forward<decltype(value)>(value) } {}
 
     explicit constexpr ErrorOr(ErrorPolicy&& error) noexcept : value_m { std::move(error) } {}
+    constexpr ErrorOr(ErrorPolicy const&) = delete;
 
-    // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(ErrorOr<value_t, ErrorPolicy> const& errorOr) noexcept : value_m { errorOr.error() } {}
-
-    // cppcheck-suppress noExplicitConstructor
-    constexpr ErrorOr(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept : value_m { std::move(errorOr.error()) } {}
-
-    constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept
-    {
-        value_m = errorOr.value_m;
-        return *this;
-    }
-
-    constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept
-    {
-        value_m = std::move(errorOr.value_m);
-        return *this;
-    }
-
-    [[nodiscard]] constexpr auto value() const { return std::get<value_t>(value_m); }
+    [[nodiscard]] constexpr decltype(auto) value() const { return std::get<value_t>(value_m); }
     [[nodiscard]] constexpr auto has_value() const noexcept { return std::holds_alternative<value_t>(value_m); }
     [[nodiscard]] constexpr auto error() const { return std::get<ErrorPolicy>(value_m); }
     [[nodiscard]] constexpr auto has_error() const noexcept { return std::holds_alternative<ErrorPolicy>(value_m); }
 
-    constexpr auto operator!() const noexcept { return has_error(); }
-    explicit constexpr operator bool() const noexcept { return !has_error(); }
-
-    [[nodiscard]] constexpr auto operator*() const
+    constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept
     {
-        if constexpr (!std::is_same_v<value_t, EmptyType>)
-            return std::get<value_t>(value_m);
+        value_m = std::move(errorOr.error());
+        return *this;
     }
 
-    [[nodiscard]] constexpr auto operator*()
+    constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept
     {
-        if constexpr (!std::is_same_v<value_t, EmptyType>)
-            return std::move(std::get<value_t>(value_m));
+        value_m = errorOr.error();
+        return *this;
     }
+
+    constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept
+        requires (!std::is_same_v<value_t, EmptyType>)
+    {
+        value_m = std::move(errorOr);
+        return *this;
+    }
+
+    constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept
+        requires (!std::is_same_v<value_t, EmptyType>)
+    {
+        value_m = errorOr;
+        return *this;
+    }
+
+    [[nodiscard]] explicit constexpr operator bool() const noexcept { return has_value(); }
 
 private:
     std::variant<value_t, ErrorPolicy> value_m {};
