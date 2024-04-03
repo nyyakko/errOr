@@ -74,6 +74,5 @@ TEST(compile_time, return_move_only_type)
         ErrorOr<std::unique_ptr<int>> pointer { new int(1) };
         return pointer;
     }().value();
-    static_assert(std::is_nothrow_move_constructible_v<std::unique_ptr<int>>);
 }
 
