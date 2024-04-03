@@ -79,6 +79,13 @@ public:
     constexpr ErrorOr(ErrorPolicy const&) = delete;
 
     [[nodiscard]] constexpr decltype(auto) value() const { return std::get<value_t>(value_m); }
+    [[nodiscard]] constexpr decltype(auto) value()
+    {
+        if constexpr (!std::is_copy_constructible_v<value_t> && !std::is_copy_assignable_v<value_t>)
+            return std::move(std::get<value_t>(value_m));
+        else
+            return std::get<value_t>(value_m);
+    }
     [[nodiscard]] constexpr auto has_value() const noexcept { return std::holds_alternative<value_t>(value_m); }
     [[nodiscard]] constexpr auto error() const { return std::get<ErrorPolicy>(value_m); }
     [[nodiscard]] constexpr auto has_error() const noexcept { return std::holds_alternative<ErrorPolicy>(value_m); }

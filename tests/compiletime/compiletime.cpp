@@ -70,9 +70,9 @@ TEST(compile_time, non_default_error_type_success)
 
 TEST(compile_time, return_move_only_type)
 {
-    (void)[] () -> ErrorOr<std::unique_ptr<int>> {
-        std::unique_ptr<int> pointer {};
+    auto value = [] () -> ErrorOr<std::unique_ptr<int>> {
+        ErrorOr<std::unique_ptr<int>> pointer { new int(1) };
         return pointer;
-    };
+    }().value();
 }
 
