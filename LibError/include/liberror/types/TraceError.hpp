@@ -10,21 +10,21 @@ namespace liberror {
 class [[nodiscard]] TraceError
 {
 public:
-    constexpr  TraceError() = default;
-    constexpr ~TraceError() = default;
-
     explicit constexpr TraceError(std::string_view message)
         : message_m { message }
         , errorStack_m { std::stacktrace::current() }
     {}
 
-    constexpr TraceError(TraceError const& error) noexcept
+    constexpr  TraceError() = default;
+    constexpr ~TraceError() = default;
+
+    constexpr TraceError(TraceError const& error)
         : message_m { error.message_m }
         , errorStack_m { error.errorStack_m }
     {}
 
     constexpr TraceError(TraceError&& error) noexcept
-        : message_m { error.message_m }
+        : message_m { std::move(error.message_m) }
         , errorStack_m { std::move(error.errorStack_m) }
     {}
 
@@ -35,14 +35,14 @@ public:
         return *this;
     }
 
-    constexpr TraceError& operator=(TraceError const& error) noexcept
+    constexpr TraceError& operator=(TraceError const& error)
     {
         message_m    = error.message_m;
         errorStack_m = error.errorStack_m;
         return *this;
     }
 
-    [[nodiscard]] auto message() const noexcept
+    [[nodiscard]] auto message() const
     {
         std::stringstream builder {};
 

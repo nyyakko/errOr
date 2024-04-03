@@ -7,15 +7,16 @@
 #include <print>
 
 using namespace liberror;
+using namespace std::literals;
 
 static constexpr auto BUFFER_SIZE = 1024;
 
 struct S
 {
-    explicit constexpr S(std::string value) noexcept : value_m { value } { std::println("S::S(std::string)"); }
-    explicit constexpr S(char const* value) noexcept : value_m { value } { std::println("S::S(char const*)"); }
+    explicit constexpr S(std::string value) : value_m { value } { std::println("S::S(std::string)"); }
+    constexpr S(char const* value) : value_m { value } { std::println("S::S(char const*)"); }
     constexpr ~S() noexcept { std::println("S::~S()"); }
-    constexpr S(S const& s) noexcept : value_m { s.value_m } { std::println("S::S(S const&)"); }
+    constexpr S(S const& s) : value_m { s.value_m } { std::println("S::S(S const&)"); }
     constexpr S(S&& s) noexcept : value_m { std::move(s.value_m) } { std::println("S::S(S&&)"); }
     constexpr S& operator=(S const& s) { value_m = s.value_m; std::println("S::S operator=(S const&)"); return *this; }
     constexpr S& operator=(S&& s) noexcept { value_m = std::move(s.value_m); std::println("S::S operator=(S&&)"); return *this; }
@@ -51,7 +52,6 @@ TEST(initialization, explicit_with_in_place_construction)
     std::array<char, BUFFER_SIZE> buffer {};
     auto const previousState = redirect_stdout_to_buffer(buffer);
     (void)[] -> ErrorOr<S> {
-        using namespace std::literals;
         ErrorOr<S> temp { "hello"s };
         return temp;
     }();
@@ -64,13 +64,13 @@ TEST(initialization, explicit_with_in_place_construction_while_checking_for_inte
     std::array<char, BUFFER_SIZE> buffer {};
     auto const previousState = redirect_stdout_to_buffer(buffer);
     (void)[] -> ErrorOr<S> {
-        using namespace std::literals;
-        ErrorOr<S> temp { "hello"s };
-        if (temp.value().value_m != "hello"s) return make_error("failure");
+        ErrorOr<S> temp { "hello" };
+        auto const& value = temp.value();
+        if (value.value_m != "hello"s) return make_error("failure");
         return temp;
     }();
     restore_stdout(previousState);
-    EXPECT_STREQ(buffer.data(), "S::S(std::string)\nS::S(S&&)\nS::~S()\nS::~S()\n");
+    EXPECT_STREQ(buffer.data(), "S::S(char const*)\nS::S(S&&)\nS::~S()\nS::~S()\n");
 }
 
 TEST(initialization, implicit_with_in_place_construction)

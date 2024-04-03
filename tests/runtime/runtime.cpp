@@ -72,14 +72,26 @@ TEST(runtime, single_error)
     EXPECT_STREQ(result.error().message().data(), "error");
 }
 
-TEST(runtime, multiple_error)
+TEST(runtime, multiple_error_lvalue)
 {
     auto result = [] () -> ErrorOr<std::string> {
-        auto const error = [] () -> ErrorOr<std::string> {
+        auto error = [] () -> ErrorOr<std::string> {
             return make_error("first error {}", 69);
         }();
         if (error.has_error()) return make_error(error.error());
         return make_error("second error");
+    }();
+
+    EXPECT_STREQ(result.error().message().data(), "first error 69");
+}
+
+TEST(runtime, multiple_error_rvalue)
+{
+    auto result = [] () -> ErrorOr<std::string> {
+        auto fnMakeError = [] () -> ErrorOr<std::string> {
+            return make_error("first error {}", 69);
+        };
+        return make_error(fnMakeError().error());
     }();
 
     EXPECT_STREQ(result.error().message().data(), "first error 69");
