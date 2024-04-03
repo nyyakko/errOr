@@ -90,33 +90,43 @@ public:
     [[nodiscard]] constexpr auto error() const { return std::get<ErrorPolicy>(value_m); }
     [[nodiscard]] constexpr auto has_error() const noexcept { return std::holds_alternative<ErrorPolicy>(value_m); }
 
+    explicit constexpr operator bool() const noexcept { return has_value(); }
+
     constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept
     {
         value_m = std::move(errorOr.error());
         return *this;
     }
 
-    constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept
+    constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy> const& errorOr)
     {
         value_m = errorOr.error();
         return *this;
     }
 
-    constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy>&& errorOr) noexcept
+    constexpr ErrorOr& operator=(ErrorOr<value_t, ErrorPolicy>&& errorOr) noexcept
         requires (!std::is_same_v<value_t, EmptyType>)
     {
         value_m = std::move(errorOr);
         return *this;
     }
 
-    constexpr ErrorOr& operator=(ErrorOr<EmptyType, ErrorPolicy> const& errorOr) noexcept
+    constexpr ErrorOr& operator=(ErrorOr<value_t, ErrorPolicy> const& errorOr)
         requires (!std::is_same_v<value_t, EmptyType>)
     {
         value_m = errorOr;
         return *this;
     }
 
-    [[nodiscard]] explicit constexpr operator bool() const noexcept { return has_value(); }
+    constexpr ErrorOr& operator=(auto&& lhs)
+        noexcept (
+                std::is_nothrow_assignable_v<value_t, decltype(lhs)> &&
+                std::is_nothrow_constructible_v<value_t, decltype(lhs)>
+            )
+    {
+        std::get<value_t>(value_m) = lhs;
+        return *this;
+    }
 
 private:
     std::variant<value_t, ErrorPolicy> value_m {};
