@@ -58,7 +58,17 @@ class [[nodiscard]] ErrorOr
     template <class, error_policy_concept> friend class ErrorOr;
 
 public:
-    using value_t = std::conditional_t<std::is_void_v<T>, EmptyType, T>;
+    using value_t =
+        std::conditional_t
+        <
+            std::is_void_v<T>,
+                EmptyType,
+                std::conditional_t<
+                    std::is_reference_v<T>,
+                    std::reference_wrapper<std::remove_reference_t<T>>, T
+                >
+        >;
+
     using error_t = ErrorPolicy;
 
     constexpr  ErrorOr() = default;
@@ -86,12 +96,29 @@ public:
     constexpr ErrorOr(ErrorPolicy const& error) : value_m { error } {}
 
     [[nodiscard]] constexpr auto has_value() const noexcept { return std::holds_alternative<value_t>(value_m); }
-    [[nodiscard]] constexpr auto const& value() const& { return std::get<value_t>(value_m); }
-    [[nodiscard]] constexpr auto& value() & { return std::get<value_t>(value_m); }
+
+    [[nodiscard]] constexpr auto const& value() const&
+    {
+        if constexpr (std::is_same_v<value_t, std::reference_wrapper<std::remove_reference_t<T>>>)
+            return std::get<value_t>(value_m).get();
+        else
+            return std::get<value_t>(value_m);
+    }
+
+    [[nodiscard]] constexpr auto& value() &
+    {
+        if constexpr (std::is_same_v<value_t, std::reference_wrapper<std::remove_reference_t<T>>>)
+            return std::get<value_t>(value_m).get();
+        else
+            return std::get<value_t>(value_m);
+    }
     [[nodiscard]] constexpr auto value() &&
         noexcept (std::is_nothrow_move_constructible_v<value_t>)
     {
-        return std::move(std::get<value_t>(value_m));
+        if constexpr (std::is_same_v<value_t, std::reference_wrapper<std::remove_reference_t<T>>>)
+            return std::move(std::get<value_t>(value_m).get());
+        else
+            return std::move(std::get<value_t>(value_m));
     }
 
     [[nodiscard]] constexpr auto has_error() const noexcept { return std::holds_alternative<error_t>(value_m); }
