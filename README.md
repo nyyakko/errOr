@@ -9,7 +9,7 @@ you may copy the files under LibError/include into your project, install it with
 and then include it with cmake into your project
 
 ```cmake
-cmake_minimum_required_version(VERSION 3.25)
+cmake_minimum_required_version(VERSION 3.28)
 
 project(CoolProject LANGUAGES CXX)
 
@@ -20,7 +20,9 @@ target_link_libraries(CoolProject PRIVATE LibError::LibError)
 
 # examples
 ```c++
-#include <liberror/ErrorOr.hpp>
+import liberror;
+
+#include <liberror/Must.hpp>
 
 #include <string>
 #include <print>
@@ -46,13 +48,16 @@ liberror::ErrorOr<std::string> read_file_contents(std::filesystem::path path)
 int main()
 {
     // if the function fails, the program execution ends an error message is given.
-    auto const contents = MUST(read_file_contents("some_cool_file.txt");
+    auto const contents = MUST(read_file_contents("some_cool_file.txt"));
     std::println("{}", contents);
 }
 ```
 
 ```c++
-#include <liberror/ErrorOr.hpp>
+import liberror;
+
+#include <liberror/Try.hpp>
+#include <liberror/Must.hpp>
 
 #include <string>
 #include <print>

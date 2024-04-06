@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
+import liberror;
 
-#include <liberror/ErrorOr.hpp>
+#include <gtest/gtest.h>
 
 #include <array>
 #include <string>

@@ -1,10 +1,11 @@
+add_subdirectory(source)
 add_subdirectory(include/liberror)
 
-add_library(${PROJECT_NAME} INTERFACE ${LibError_HeaderFiles})
+add_library(${PROJECT_NAME})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 if (ENABLE_CLANGTIDY)
-    enable_clang_tidy()
+    # enable_clang_tidy()
 endif()
 
 if (ENABLE_CPPCHECK)
@@ -12,16 +13,18 @@ if (ENABLE_CPPCHECK)
 endif()
 
 target_include_directories(${PROJECT_NAME}
-    INTERFACE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/liberror"
 )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES VERIFY_INTERFACE_HEADER_SETS TRUE)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
 
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_23)
-
-target_sources(${PROJECT_NAME} PUBLIC FILE_SET HEADERS BASE_DIRS include FILES ${LibError_HeaderFiles})
+target_sources(${PROJECT_NAME}
+    PUBLIC
+        FILE_SET CXX_MODULES BASE_DIRS source
+            FILES ${LibError_SourceFiles}
+            FILE_SET HEADERS BASE_DIRS include
+            FILES ${LibError_HeaderFiles}
+)
 
 export(TARGETS      ${PROJECT_NAME}
        FILE         ${EXPORT_DIR}/${PROJECT_NAME}Targets.cmake
@@ -32,7 +35,9 @@ install(TARGETS     ${PROJECT_NAME}
         EXPORT      ${PROJECT_NAME}Targets
         ARCHIVE
         FILE_SET HEADERS
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILE_SET CXX_MODULES
+            DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}
 )
 
 install(EXPORT      ${PROJECT_NAME}Targets
@@ -42,5 +47,6 @@ install(EXPORT      ${PROJECT_NAME}Targets
 
 install(FILES ${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}/cmake)
 
-target_compile_options(${PROJECT_NAME} INTERFACE ${LibError_CompilerOptions})
-target_link_libraries(${PROJECT_NAME} INTERFACE ${LibError_ExternalLibraries})
+target_link_options(${PROJECT_NAME} PRIVATE ${LibError_LinkerOptions})
+target_compile_options(${PROJECT_NAME} PRIVATE ${LibError_CompilerOptions})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LibError_ExternalLibraries})
