@@ -91,7 +91,7 @@ TEST(compile_time, return_move_only_type)
 
 TEST(compile_time, reference_type)
 {
-    auto const value = [] () -> ErrorOr<S const&> {
+    auto value = [] () -> ErrorOr<S const&> {
         S static value { "hello" };
         return value;
     }();

@@ -112,13 +112,19 @@ public:
         else
             return std::get<value_t>(value_m);
     }
+
     [[nodiscard]] constexpr auto value() &&
         noexcept (std::is_nothrow_move_constructible_v<value_t>)
     {
-        if constexpr (std::is_same_v<value_t, std::reference_wrapper<std::remove_reference_t<T>>>)
-            return std::move(std::get<value_t>(value_m).get());
-        else
-            return std::move(std::get<value_t>(value_m));
+        return std::move(std::get<value_t>(value_m));
+    }
+
+    [[gnu::warning("You're not getting a reference to, but a copy of T.")]]
+    [[nodiscard]] constexpr auto value() &&
+        noexcept (std::is_nothrow_move_constructible_v<value_t>)
+        requires (std::is_same_v<value_t, std::reference_wrapper<std::remove_reference_t<T>>>)
+    {
+        return std::move(std::get<value_t>(value_m).get());
     }
 
     [[nodiscard]] constexpr auto has_error() const noexcept { return std::holds_alternative<error_t>(value_m); }

@@ -18,7 +18,7 @@ if (ENABLE_TESTING)
 endif()
 
 # set(LibError_LinkerOptions ${LibError_LinkerOptions})
-set(LibError_CompilerOptions ${LibError_CompilerOptions} -Wno-language-extension-token)
+# set(LibError_CompilerOptions ${LibError_CompilerOptions})
 
 # set(LibError_ExternalLibraries)
 
