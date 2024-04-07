@@ -46,7 +46,7 @@ liberror::ErrorOr<std::string> read_file_contents(std::filesystem::path path)
 int main()
 {
     // if the function fails, the program execution ends an error message is given.
-    auto const contents = MUST(read_file_contents("some_cool_file.txt");
+    auto const contents = MUST(read_file_contents("some_cool_file.txt"));
     std::println("{}", contents);
 }
 ```
