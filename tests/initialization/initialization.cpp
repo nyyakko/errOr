@@ -51,10 +51,12 @@ TEST(initialization, explicit_with_in_place_construction)
 {
     std::array<char, BUFFER_SIZE> buffer {};
     auto const previousState = redirect_stdout_to_buffer(buffer);
-    (void)[] -> ErrorOr<S> {
-        ErrorOr<S> temp { "hello"s };
-        return temp;
-    }();
+    {
+        auto result = [] -> ErrorOr<S> {
+            ErrorOr<S> temp { "hello"s };
+            return temp;
+        }();
+    }
     restore_stdout(previousState);
     EXPECT_STREQ(buffer.data(), "S::S(std::string)\nS::~S()\n");
 }
@@ -63,12 +65,14 @@ TEST(initialization, explicit_with_in_place_construction_while_checking_for_inte
 {
     std::array<char, BUFFER_SIZE> buffer {};
     auto const previousState = redirect_stdout_to_buffer(buffer);
-    (void)[] -> ErrorOr<S> {
-        ErrorOr<S> temp { "hello" };
-        auto const& value = temp.value();
-        if (value.value_m != "hello"s) return make_error("failure");
-        return temp;
-    }();
+    {
+        auto result = [] -> ErrorOr<S> {
+            ErrorOr<S> temp { "hello" };
+            auto const& value = temp.value();
+            if (value.value_m != "hello"s) return make_error("failure");
+            return temp;
+        }();
+    }
     restore_stdout(previousState);
     EXPECT_STREQ(buffer.data(), "S::S(char const*)\nS::S(S&&)\nS::~S()\nS::~S()\n");
 }
@@ -77,9 +81,11 @@ TEST(initialization, implicit_with_in_place_construction)
 {
     std::array<char, BUFFER_SIZE> buffer {};
     auto const previousState = redirect_stdout_to_buffer(buffer);
-    (void)[] -> ErrorOr<S> {
-        return "hello";
-    }();
+    {
+        auto result = [] -> ErrorOr<S> {
+            return "hello";
+        }();
+    }
     restore_stdout(previousState);
     EXPECT_STREQ(buffer.data(), "S::S(char const*)\nS::~S()\n");
 }

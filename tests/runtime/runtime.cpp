@@ -78,7 +78,7 @@ TEST(runtime, multiple_error_lvalue)
         auto error = [] () -> ErrorOr<std::string> {
             return make_error("first error {}", 69);
         }();
-        if (error.has_error()) return make_error(error.error());
+        if (!error.has_value()) return make_error(error.error());
         return make_error("second error");
     }();
 
