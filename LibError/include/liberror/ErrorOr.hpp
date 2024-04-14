@@ -11,7 +11,7 @@
     using namespace liberror;                                                       \
     auto&& _ = (expression);                                                        \
     if (!_.has_value()) return make_error(_.error());                               \
-    _.value();                                                                      \
+    std::move(_).value();                                                           \
 })
 
 #define MUST(expression) ({                                                         \
@@ -22,7 +22,7 @@
         std::println(stderr, "Aborted execution because: {}", _.error().message()); \
         std::abort();                                                               \
     }                                                                               \
-    _.value();                                                                      \
+    std::move(_).value();                                                           \
 })
 #else
 #error "Your compiler doesn't allow for [compound-expressions](https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html)"
