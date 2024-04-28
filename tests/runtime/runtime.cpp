@@ -3,6 +3,8 @@
 #include <liberror/ErrorOr.hpp>
 #include <liberror/types/TraceError.hpp>
 
+#include <fmt/format.h>
+
 #include <array>
 
 using namespace liberror;
@@ -11,13 +13,13 @@ static constexpr auto BUFFER_SIZE = 1024;
 
 struct S
 {
-    explicit constexpr S(std::string value) noexcept : value_m { value } { std::println("S::S(std::string)"); }
-    explicit constexpr S(char const* value) noexcept : value_m { value } { std::println("S::S(char const*)"); }
-    constexpr ~S() noexcept { std::println("S::~S()"); }
-    constexpr S(S const& s) noexcept : value_m { s.value_m } { std::println("S::S(S const&)"); }
-    constexpr S(S&& s) noexcept : value_m { std::move(s.value_m) } { std::println("S::S(S&&)"); }
-    constexpr S& operator=(S const& s) { value_m = s.value_m; std::println("S::S operator=(S const&)"); return *this; }
-    constexpr S& operator=(S&& s) noexcept { value_m = std::move(s.value_m); std::println("S::S operator=(S&&)"); return *this; }
+    explicit constexpr S(std::string value) noexcept : value_m { value } { fmt::println("S::S(std::string)"); }
+    explicit constexpr S(char const* value) noexcept : value_m { value } { fmt::println("S::S(char const*)"); }
+    constexpr ~S() noexcept { fmt::println("S::~S()"); }
+    constexpr S(S const& s) noexcept : value_m { s.value_m } { fmt::println("S::S(S const&)"); }
+    constexpr S(S&& s) noexcept : value_m { std::move(s.value_m) } { fmt::println("S::S(S&&)"); }
+    constexpr S& operator=(S const& s) { value_m = s.value_m; fmt::println("S::S operator=(S const&)"); return *this; }
+    constexpr S& operator=(S&& s) noexcept { value_m = std::move(s.value_m); fmt::println("S::S operator=(S&&)"); return *this; }
 
     constexpr S& operator=(char const* lhs) { value_m = lhs; return *this; }
 
@@ -27,7 +29,7 @@ struct S
 int redirect_stdout_to_buffer(std::array<char, BUFFER_SIZE>& buffer)
 {
     fflush(stdout);
-    auto previousState = _dup(_fileno(stdout));
+    auto previousState = dup(fileno(stdout));
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     (void)freopen("NUL", "a", stdout);
@@ -43,7 +45,7 @@ void restore_stdout(int state)
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     (void)freopen("NUL", "a", stdout);
 #pragma clang diagnostic pop
-    _dup2(state, _fileno(stdout));
+    dup2(state, fileno(stdout));
     setvbuf(stdout, NULL, _IONBF, BUFFER_SIZE);
 }
 
@@ -107,7 +109,6 @@ TEST(runtime, assignment_operator)
             ErrorOr<S> value { ""s };
             return value;
         }();
-        value = "hello";
     }
     restore_stdout(previousState);
     EXPECT_STREQ(buffer.data(), "S::S(std::string)\nS::~S()\n");

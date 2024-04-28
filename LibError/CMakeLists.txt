@@ -4,11 +4,11 @@ add_library(${PROJECT_NAME} INTERFACE ${LibError_HeaderFiles})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 if (ENABLE_CLANGTIDY)
-    enable_clang_tidy()
+    enable_clang_tidy(${PROJECT_NAME})
 endif()
 
 if (ENABLE_CPPCHECK)
-    enable_cppcheck()
+    enable_cppcheck(${PROJECT_NAME})
 endif()
 
 target_include_directories(${PROJECT_NAME}

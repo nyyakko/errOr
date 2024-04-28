@@ -3,23 +3,29 @@
 #include <liberror/ErrorOr.hpp>
 #include <liberror/types/TraceError.hpp>
 
+#include <fmt/format.h>
+
 #include <memory>
 
 using namespace liberror;
 
 struct S
 {
-    explicit constexpr S(std::string value) : value_m { value } { std::println("S::S(std::string)"); }
-    constexpr S(char const* value) : value_m { value } { std::println("S::S(char const*)"); }
-    constexpr ~S() noexcept { std::println("S::~S()"); }
-    constexpr S(S const& s) : value_m { s.value_m } { std::println("S::S(S const&)"); }
-    constexpr S(S&& s) noexcept : value_m { std::move(s.value_m) } { std::println("S::S(S&&)"); }
-    constexpr S& operator=(S const& s) { value_m = s.value_m; std::println("S::S operator=(S const&)"); return *this; }
-    constexpr S& operator=(S&& s) noexcept { value_m = std::move(s.value_m); std::println("S::S operator=(S&&)"); return *this; }
+    explicit constexpr S(std::string value) : value_m { value } { fmt::println("S::S(std::string)"); }
+    // cppcheck-suppress noExplicitConstructor
+    constexpr S(char const* value) : value_m { value } { fmt::println("S::S(char const*)"); }
+    constexpr ~S() noexcept { fmt::println("S::~S()"); }
+    // cppcheck-suppress noExplicitConstructor
+    constexpr S(S const& s) : value_m { s.value_m } { fmt::println("S::S(S const&)"); }
+    // cppcheck-suppress noExplicitConstructor
+    constexpr S(S&& s) noexcept : value_m { std::move(s.value_m) } { fmt::println("S::S(S&&)"); }
+    constexpr S& operator=(S const& s) { value_m = s.value_m; fmt::println("S::S operator=(S const&)"); return *this; }
+    constexpr S& operator=(S&& s) noexcept { value_m = std::move(s.value_m); fmt::println("S::S operator=(S&&)"); return *this; }
 
     std::string value_m {};
 };
 
+#ifdef __cpp_lib_expected
 consteval ErrorOr<size_t> inspect_string(std::string_view input, size_t current = 0)
 {
     size_t index = current;
@@ -80,6 +86,7 @@ TEST(compile_time, non_default_error_type_success)
     static_assert(result.has_value() == true);
     static_assert(result.value() == "69420");
 }
+#endif
 
 TEST(compile_time, return_move_only_type)
 {

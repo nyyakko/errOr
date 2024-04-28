@@ -2,9 +2,21 @@
 
 #include "types/DefaultError.hpp"
 
-#include <print>
-#include <string_view>
+#include <fmt/format.h>
+
+#ifndef __cpp_lib_expected
+#include <tl/expected.hpp>
+namespace liberror {
+    using namespace tl;
+}
+#else
 #include <expected>
+namespace liberror {
+    using std::expected;
+}
+#endif
+
+#include <string_view>
 
 #if defined(__clang__) || defined(__GNUC__)
 #define TRY(expression) ({                                                          \
@@ -19,13 +31,13 @@
     auto&& _ = (expression);                                                        \
     if (!_.has_value())                                                             \
     {                                                                               \
-        std::println(stderr, "Aborted execution because: {}", _.error().message()); \
+        fmt::println(stderr, "Aborted execution because: {}", _.error().message()); \
         std::abort();                                                               \
     }                                                                               \
     std::move(_).value();                                                           \
 })
 #else
-#error "Your compiler doesn't allow for [compound-expressions](https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html)"
+#error "Compiler doesn't support [compound-expressions](https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html)"
 #endif
 
 namespace liberror {
@@ -45,30 +57,30 @@ concept error_policy_concept = requires (T error)
 };
 
 template <class T, error_policy_concept ErrorPolicy = DefaultError>
-using ErrorOr = std::expected<T, ErrorPolicy>;
+using ErrorOr = expected<T, ErrorPolicy>;
 
 template <error_policy_concept ErrorPolicy = DefaultError>
 constexpr auto make_error(std::string_view message)
 {
-    return std::unexpected<ErrorPolicy>(message);
+    return unexpected<ErrorPolicy>(message);
 }
 
 template <error_policy_concept ErrorPolicy = DefaultError>
 constexpr auto make_error(std::string_view format, auto&&... arguments)
 {
-    return std::unexpected<ErrorPolicy>(std::vformat(format, std::make_format_args(std::forward<decltype(arguments)>(arguments)...)));
+    return unexpected<ErrorPolicy>(fmt::vformat(format, fmt::make_format_args(arguments...)));
 }
 
 template <error_policy_concept ErrorPolicy = DefaultError>
 constexpr auto make_error(ErrorPolicy&& error) noexcept
 {
-    return std::unexpected<ErrorPolicy>(std::forward<ErrorPolicy>(error));
+    return unexpected<ErrorPolicy>(std::forward<ErrorPolicy>(error));
 }
 
 template <error_policy_concept ErrorPolicy = DefaultError>
 constexpr auto make_error(ErrorPolicy& error) noexcept
 {
-    return std::unexpected<ErrorPolicy>(std::move(error));
+    return unexpected<ErrorPolicy>(std::move(error));
 }
 
 } // liberror
