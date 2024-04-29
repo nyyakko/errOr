@@ -96,3 +96,10 @@ TEST(compile_time, return_move_only_type)
     }().value();
 }
 
+TEST(compile_time, return_void_type)
+{
+    [[maybe_unused]] auto value = [] () -> ErrorOr<void> {
+        return {};
+    }().value();
+}
+
