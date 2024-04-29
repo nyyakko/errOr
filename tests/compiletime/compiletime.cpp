@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
-
 #include <liberror/ErrorOr.hpp>
-#include <liberror/types/TraceError.hpp>
 
 #include <fmt/format.h>
 
@@ -15,9 +13,7 @@ struct S
     // cppcheck-suppress noExplicitConstructor
     constexpr S(char const* value) : value_m { value } { fmt::println("S::S(char const*)"); }
     constexpr ~S() noexcept { fmt::println("S::~S()"); }
-    // cppcheck-suppress noExplicitConstructor
     constexpr S(S const& s) : value_m { s.value_m } { fmt::println("S::S(S const&)"); }
-    // cppcheck-suppress noExplicitConstructor
     constexpr S(S&& s) noexcept : value_m { std::move(s.value_m) } { fmt::println("S::S(S&&)"); }
     constexpr S& operator=(S const& s) { value_m = s.value_m; fmt::println("S::S operator=(S const&)"); return *this; }
     constexpr S& operator=(S&& s) noexcept { value_m = std::move(s.value_m); fmt::println("S::S operator=(S&&)"); return *this; }

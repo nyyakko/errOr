@@ -1,7 +1,5 @@
 #include <gtest/gtest.h>
-
 #include <liberror/ErrorOr.hpp>
-#include <liberror/types/TraceError.hpp>
 
 #include <fmt/format.h>
 
@@ -47,13 +45,6 @@ void restore_stdout(int state)
 #pragma clang diagnostic pop
     dup2(state, fileno(stdout));
     setvbuf(stdout, NULL, _IONBF, BUFFER_SIZE);
-}
-
-TEST(compile_time, non_default_error_type_failure)
-{
-    auto result = [] () -> ErrorOr<std::string_view, TraceError> {
-        return make_error<TraceError>("failure");
-    }();
 }
 
 TEST(runtime, no_error)

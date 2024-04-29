@@ -12,7 +12,6 @@ namespace liberror {
     using fmt::make_format_args;
     using fmt::println;
 }
-
 #else
 #include <format>
 #include <print>
