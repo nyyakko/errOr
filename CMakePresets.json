@@ -16,6 +16,7 @@
                 "strategy": "external"
             },
             "cacheVariables": {
+                "EXPORT_DIR": "${sourceDir}/build/cmake",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
                 "LibError_CompilerOptions": "-Werror;-Wall;-Wextra;-Wshadow;-Wnon-virtual-dtor;-Wold-style-cast;-Wcast-align;-Wunused;-Woverloaded-virtual;-Wpedantic;-Wconversion;-Wsign-conversion;-Wnull-dereference;-Wdouble-promotion;-Wimplicit-fallthrough"
             }

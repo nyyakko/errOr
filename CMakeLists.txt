@@ -2,10 +2,8 @@ cmake_minimum_required(VERSION 3.25)
 
 project(LibError LANGUAGES CXX)
 
-set(EXPORT_DIR "${CMAKE_SOURCE_DIR}/build/cmake")
-
-include(cmake/CPM.cmake)
 include(cmake/static_analyzers.cmake)
+include(cmake/get_cpm.cmake)
 include(cmake/enable_tests.cmake)
 include(GNUInstallDirs)
 
@@ -17,7 +15,7 @@ endif()
 # set(LibError_LinkerOptions ${LibError_LinkerOptions})
 
 CPMAddPackage("gh:fmtlib/fmt#10.2.1")
-CPMAddPackage("gh:nyyakko/expected@master#bdc55a0")
+CPMAddPackage("gh:nyyakko/expected#35de9a0")
 
 set(LibError_ExternalLibraries fmt::fmt expected::expected)
 
