@@ -2,17 +2,24 @@
 
 #include "types/DefaultError.hpp"
 
+#include <cstdlib>
 #include <fmt/format.h>
 
 #ifndef __cpp_lib_expected
 #include <tl/expected.hpp>
+
 namespace liberror {
     using namespace tl;
 }
 #else
 #include <expected>
+
 namespace liberror {
-    using std::expected;
+    template <class T, class E>
+    using expected = std::expected<T, E>;
+
+    template <class E>
+    using unexpected = std::unexpected<E>;
 }
 #endif
 
@@ -56,9 +63,7 @@ concept error_policy_concept = requires (T error)
     error.message();
 };
 
-namespace {
-    struct Void {};
-}
+struct Void {};
 
 template <class T, error_policy_concept ErrorPolicy = DefaultError>
 using ErrorOr = expected<std::conditional_t<std::is_void_v<T>, Void, T>, ErrorPolicy>;
