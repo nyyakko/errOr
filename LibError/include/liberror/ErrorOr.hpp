@@ -3,7 +3,25 @@
 #include "types/DefaultError.hpp"
 
 #include <cstdlib>
+
+#ifndef __cpp_lib_format
 #include <fmt/format.h>
+
+namespace liberror {
+    using fmt::vformat;
+    using fmt::make_format_args;
+    using fmt::println;
+}
+
+#else
+#include <format>
+
+namespace liberror {
+    using std::vformat;
+    using std::make_format_args;
+    using std::println;
+}
+#endif
 
 #ifndef __cpp_lib_expected
 #include <tl/expected.hpp>
@@ -26,22 +44,22 @@ namespace liberror {
 #include <string_view>
 
 #if defined(__clang__) || defined(__GNUC__)
-#define TRY(expression) ({                                                          \
-    using namespace liberror;                                                       \
-    auto&& _ = (expression);                                                        \
-    if (!_.has_value()) return make_error(_.error());                               \
-    std::move(_).value();                                                           \
+#define TRY(expression) ({                                                              \
+    using namespace liberror;                                                           \
+    auto&& _ = (expression);                                                            \
+    if (!_.has_value()) return make_error(_.error());                                   \
+    std::move(_).value();                                                               \
 })
 
-#define MUST(expression) ({                                                         \
-    using namespace liberror;                                                       \
-    auto&& _ = (expression);                                                        \
-    if (!_.has_value())                                                             \
-    {                                                                               \
-        fmt::println(stderr, "Aborted execution because: {}", _.error().message()); \
-        std::abort();                                                               \
-    }                                                                               \
-    std::move(_).value();                                                           \
+#define MUST(expression) ({                                                             \
+    using namespace liberror;                                                           \
+    auto&& _ = (expression);                                                            \
+    if (!_.has_value())                                                                 \
+    {                                                                                   \
+        liberor::println(stderr, "Aborted execution because: {}", _.error().message()); \
+        std::abort();                                                                   \
+    }                                                                                   \
+    std::move(_).value();                                                               \
 })
 #else
 #error "Compiler doesn't support [compound-expressions](https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html)"
@@ -77,7 +95,7 @@ constexpr auto make_error(std::string_view message)
 template <error_policy_concept ErrorPolicy = DefaultError>
 constexpr auto make_error(std::string_view format, auto&&... arguments)
 {
-    return unexpected<ErrorPolicy>(fmt::vformat(format, fmt::make_format_args(arguments...)));
+    return unexpected<ErrorPolicy>(vformat(format, make_format_args(arguments...)));
 }
 
 template <error_policy_concept ErrorPolicy = DefaultError>
