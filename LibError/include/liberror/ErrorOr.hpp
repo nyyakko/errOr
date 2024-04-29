@@ -4,7 +4,7 @@
 
 #include <cstdlib>
 
-#ifndef __cpp_lib_format
+#ifndef __cpp_lib_print
 #include <fmt/format.h>
 
 namespace liberror {
@@ -15,6 +15,7 @@ namespace liberror {
 
 #else
 #include <format>
+#include <print>
 
 namespace liberror {
     using std::vformat;
