@@ -1,49 +1,30 @@
 #pragma once
 
+#if !(defined(__clang__) || defined(__GNUC__))
+#error "Compiler doesn't support [compound-expressions](https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html)"
+#endif
+
 #include "types/DefaultError.hpp"
 
-#include <cstdlib>
+#include <string_view>
 
 #ifndef __cpp_lib_print
 #include <fmt/format.h>
-
-namespace liberror {
-    using fmt::vformat;
-    using fmt::make_format_args;
-    using fmt::println;
-}
+#define LIBERROR_FMT fmt
 #else
 #include <format>
 #include <print>
-
-namespace liberror {
-    using std::vformat;
-    using std::make_format_args;
-    using std::println;
-}
+#define LIBERROR_FMT std
 #endif
 
 #ifndef __cpp_lib_expected
 #include <tl/expected.hpp>
-
-namespace liberror {
-    using namespace tl;
-}
+#define LIBERROR_EXP tl
 #else
 #include <expected>
-
-namespace liberror {
-    template <class T, class E>
-    using expected = std::expected<T, E>;
-
-    template <class E>
-    using unexpected = std::unexpected<E>;
-}
+#define LIBERROR_EXP std
 #endif
 
-#include <string_view>
-
-#if defined(__clang__) || defined(__GNUC__)
 #define TRY(expression) ({                                                              \
     using namespace liberror;                                                           \
     auto&& _ = (expression);                                                            \
@@ -61,9 +42,6 @@ namespace liberror {
     }                                                                                   \
     std::move(_).value();                                                               \
 })
-#else
-#error "Compiler doesn't support [compound-expressions](https://gcc.gnu.org/onlinedocs/gcc/Statement-Exprs.html)"
-#endif
 
 namespace liberror {
 
@@ -84,30 +62,30 @@ concept error_policy_concept = requires (T error)
 struct Void {};
 
 template <class T, error_policy_concept ErrorPolicy = DefaultError>
-using ErrorOr = expected<std::conditional_t<std::is_void_v<T>, Void, T>, ErrorPolicy>;
+using ErrorOr = LIBERROR_EXP::expected<std::conditional_t<std::is_void_v<T>, Void, T>, ErrorPolicy>;
 
 template <error_policy_concept ErrorPolicy = DefaultError>
 constexpr auto make_error(std::string_view message)
 {
-    return unexpected<ErrorPolicy>(message);
+    return LIBERROR_EXP::unexpected<ErrorPolicy>(message);
 }
 
 template <error_policy_concept ErrorPolicy = DefaultError>
 constexpr auto make_error(std::string_view format, auto&&... arguments)
 {
-    return unexpected<ErrorPolicy>(vformat(format, make_format_args(arguments...)));
+    return LIBERROR_EXP::unexpected<ErrorPolicy>(LIBERROR_FMT::vformat(format, LIBERROR_FMT::make_format_args(arguments...)));
 }
 
 template <error_policy_concept ErrorPolicy = DefaultError>
 constexpr auto make_error(ErrorPolicy&& error) noexcept
 {
-    return unexpected<ErrorPolicy>(std::forward<ErrorPolicy>(error));
+    return LIBERROR_EXP::unexpected<ErrorPolicy>(std::forward<ErrorPolicy>(error));
 }
 
 template <error_policy_concept ErrorPolicy = DefaultError>
 constexpr auto make_error(ErrorPolicy& error) noexcept
 {
-    return unexpected<ErrorPolicy>(std::move(error));
+    return LIBERROR_EXP::unexpected<ErrorPolicy>(std::move(error));
 }
 
 } // liberror
