@@ -42,6 +42,8 @@
     std::move(_).value();                                                                    \
 })
 
+#define THROW(fmt, ...) return liberror::make_error(fmt __VA_OPT__(,) __VA_ARGS__);
+
 namespace liberror {
 
 template <class T>
