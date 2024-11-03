@@ -63,7 +63,7 @@ concept error_policy_concept = requires (T error)
 struct Void {};
 
 template <class T, error_policy_concept ErrorPolicy = DefaultError>
-using ErrorOr = LIBERROR_EXP::expected<std::conditional_t<std::is_void_v<T>, Void, T>, ErrorPolicy>;
+using Maybe = LIBERROR_EXP::expected<std::conditional_t<std::is_void_v<T>, Void, T>, ErrorPolicy>;
 
 template <error_policy_concept ErrorPolicy = DefaultError>
 constexpr auto make_error(std::string_view message)

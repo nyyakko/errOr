@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <liberror/ErrorOr.hpp>
+#include <liberror/Maybe.hpp>
 
 #include <fmt/format.h>
 
@@ -49,7 +49,7 @@ void restore_stdout(int state)
 
 TEST(runtime, no_error)
 {
-    auto result = [] () -> ErrorOr<std::string_view> {
+    auto result = [] () -> Maybe<std::string_view> {
         return "69420";
     }();
 
@@ -58,7 +58,7 @@ TEST(runtime, no_error)
 
 TEST(runtime, single_error)
 {
-    auto result = [] () -> ErrorOr<std::string> {
+    auto result = [] () -> Maybe<std::string> {
         THROW("error");
     }();
 
@@ -67,8 +67,8 @@ TEST(runtime, single_error)
 
 TEST(runtime, multiple_error_lvalue)
 {
-    auto result = [] () -> ErrorOr<std::string> {
-        auto result = TRY([] () -> ErrorOr<std::string> {
+    auto result = [] () -> Maybe<std::string> {
+        auto result = TRY([] () -> Maybe<std::string> {
             THROW("first error {}", 69);
             return "hello, world!";
         }());
@@ -81,8 +81,8 @@ TEST(runtime, multiple_error_lvalue)
 
 TEST(runtime, multiple_error_rvalue)
 {
-    auto result = [] () -> ErrorOr<std::string> {
-        auto fnMakeError = [] () -> ErrorOr<std::string> {
+    auto result = [] () -> Maybe<std::string> {
+        auto fnMakeError = [] () -> Maybe<std::string> {
             THROW("first error {}", 69);
         };
         THROW(fnMakeError().error());
@@ -96,9 +96,9 @@ TEST(runtime, assignment_operator)
     std::array<char, BUFFER_SIZE> buffer {};
     auto const previousState = redirect_stdout_to_buffer(buffer);
     {
-        auto value = [] () -> ErrorOr<S> {
+        auto value = [] () -> Maybe<S> {
             using namespace std::literals;
-            ErrorOr<S> value { ""s };
+            Maybe<S> value { ""s };
             return value;
         }();
     }
